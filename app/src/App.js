@@ -9,9 +9,9 @@ class App extends React.Component {
         this.state = {
             notes: [],
             newNote: '',
-            shown: true,
-            countId: "0"
+            shown: true
         }
+
       this.handleChange = this.handleChange.bind(this)
       this.handleCross = this.handleCross.bind(this)
       this.handleDelete = this.handleDelete.bind(this)
@@ -36,14 +36,11 @@ class App extends React.Component {
       let noteObject = {
           content: this.state.notes[index].content,
           noteState: true,
-          id: lid
+          id: this.state.notes[index].id
       }
       
       if (this.state.notes[index].noteState === false) {
         noteObject.noteState = true
-        this.setState({
-          notes: this.state.notes.map(n => n.id !== lid ? n : noteObject)
-        })
         this.state.notes[index].noteState = true;
 
       } else if (this.state.notes[index].noteState === true) {
@@ -55,15 +52,14 @@ class App extends React.Component {
           .update(lid, noteObject)
           .then(response => {
               this.setState({
-                  notes: this.state.notes.map(n => n.id !== lid ? n : noteObject)
+                notes: this.state.notes.map(n => n.id !== lid ? n : noteObject)
               })
           })
     } 
 
-    
-    handleDelete = (event) => { 
+    handleDelete = (event) => {
+      event.preventDefault() 
       let lid = event.target.getAttribute('id')
-
       noteService
           .remove(lid)
           .then(() => {
@@ -78,8 +74,7 @@ class App extends React.Component {
       event.preventDefault()
       const noteObject = {
         content: this.state.newNote,
-        noteState: false,
-        id: this.state.countId
+        noteState: false
       }
 
       noteService
@@ -96,15 +91,7 @@ class App extends React.Component {
       this.state.shown ? this.setState({shown: false}) : this.setState({shown: true});
     }
 
-    setCountId = () => {
-      if (this.state.notes.length > 0) {
-        const x = parseInt(this.state.notes.slice(-1)[0].id, 10) + 1;
-        this.state.countId = x.toString()
-      }
-    }
-
     render() {
-      this.setCountId()
         return (
           <div className="App" id="container">
             <h1>TO-DO LIST 
